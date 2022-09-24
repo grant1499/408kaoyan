@@ -732,24 +732,231 @@ int main(){
 
 ### 13.递增链表归并为递减链表
 
-```C++
+将两个递增有序单链表（带头结点）归并为一个递减有序单链表，要求利用原来两个单链表的节点存放归并后的单链表。
 
+```C++
+#include <bits/stdc++.h>
+using namespace std;
+
+struct Node{
+    int data;
+    Node *next;
+    
+    Node():data(-1),next(NULL){}
+    Node(int _data):data(_data),next(NULL){}
+};
+typedef Node* LinkList; // 给指向链表节点的指针取别名LinkList
+
+LinkList Merge(LinkList L1,LinkList L2){ // 将两个递增有序（带头结点）单链表归并为递减单链表
+    LinkList p = L1->next,q = L2->next;
+    L1->next = NULL; // 将结点重新放回L1中
+    while (p && q){  // 链表头插法实现递减
+        LinkList t = p->next,s = q->next;
+        if (p->data <= q->data){
+            p->next = L1->next,L1->next = p;
+            p = t;
+        }else{
+            q->next = L1->next,L1->next = q;
+            q = s;
+        }
+    }
+    
+    while (p){
+        LinkList t = p->next;
+        p->next = L1->next,L1->next = p;
+        p = t;
+    }
+    while (q){
+        LinkList s = q->next;
+        q->next = L1->next,L1->next = q;
+        q = s;
+    }
+    return L1;
+}
+
+void Print(LinkList L){
+    for (LinkList p = L->next;p;p = p->next) cout << p->data << ' ';
+    cout << '\n';
+}
+
+int main(){
+    // 生成测试单链表（有头节点）head1,head2即头节点
+    LinkList head1 = new Node(),head2 = new Node();
+    LinkList p = head1;
+    int a[5] = {1,3,5,7,9};
+    int b[4] = {2,4,6,8};
+    for (int i = 0;i < 5;i ++){
+        p->next = new Node(a[i]);
+        p = p->next;
+    }
+    
+    LinkList q = head2;
+    for (int i = 0;i < 4;i ++){
+        q->next = new Node(b[i]);
+        q = q->next;
+    }
+    
+    Merge(head1,head2);
+    Print(head1);
+    return 0;
+}
 ```
 
 ### 15.有序链表的交集
 
-```C++
+求两个递增链表（带头结点）的交集并存放在第一个链表中。
 
+```C++
+#include <bits/stdc++.h>
+using namespace std;
+
+struct Node{
+    int data;
+    Node *next;
+    
+    Node():data(-1),next(NULL){}
+    Node(int _data):data(_data),next(NULL){}
+};
+typedef Node* LinkList; // 给指向链表节点的指针取别名LinkList
+
+void Print(LinkList L){
+    for (LinkList p = L->next;p;p = p->next) cout << p->data << ' ';
+    cout << '\n';
+}
+
+void Intersection(LinkList L1,LinkList L2){ // 求两递增链表交集（带头结点）
+    LinkList p = L1->next,q = L2->next;
+    LinkList r = L1; // 重排L1
+    r->next = NULL;
+    while (p && q){
+        LinkList t = p->next,s = q->next;
+        if (p->data == q->data){
+            r->next = p,p->next = NULL,r = p;
+            p = t,q = s;
+        }else if (p->data < q->data) p = t;
+        else q = s;
+    }
+    Print(L1);
+}
+
+int main(){
+    // 生成测试单链表（有头节点）head1,head2即头节点
+    LinkList head1 = new Node(),head2 = new Node();
+    LinkList p = head1;
+    int a[5] = {1,3,5,7,9};
+    int b[4] = {1,3,7,8};
+    for (int i = 0;i < 5;i ++){
+        p->next = new Node(a[i]);
+        p = p->next;
+    }
+    
+    LinkList q = head2;
+    for (int i = 0;i < 4;i ++){
+        q->next = new Node(b[i]);
+        q = q->next;
+    }
+    
+    Intersection(head1,head2);
+    return 0;
+}
 ```
 
 ### 17.对称循环双链表
 
-```C++
+设计算法判断带头节点的循环双链表是否对称。
 
+```C++
+#include <bits/stdc++.h>
+using namespace std;
+
+struct Node{ // 双向链表
+    int data;
+    Node *prev,*next;
+    
+    Node():data(-1),prev(NULL),next(NULL){}
+    Node(int _data):data(_data),prev(NULL),next(NULL){}
+};
+typedef Node* DLinkList; // 给指向链表节点的指针取别名DLinkList
+
+bool Solve(DLinkList head){ // 判断带头节点的循环双链表是否对称
+    DLinkList p = head->next,q = head->prev;
+    while (p != q){
+        if (p->data != q->data) return false;
+        p = p->next,q = q->prev;
+    }
+    return true;
+}
+
+int main(){
+    // 生成测试双循环链表（有头节点）head即头节点
+    DLinkList head = new Node();
+    head->next = head,head->prev = head;
+    int a[4] = {1,2,2,1};
+    DLinkList p = head;
+    for (int i = 0;i < 4;i ++){
+        DLinkList t = new Node(a[i]);
+        p->next = t,t->prev = p,p = p->next;
+        head->prev = t,t->next = head;
+    }
+    
+    for (DLinkList p = head->next;p != head;p = p->next) cout << p->data << ' ';
+    cout << '\n';
+    cout << Solve(head) << '\n';
+    return 0;
+}
 ```
 
 ### 18.合并循环链表
 
-```C++
+有两个不带头节点（有头指针）的循环单链表，将表2链接到表1之后形成大的循环单链表。
 
+```C++
+#include <bits/stdc++.h>
+using namespace std;
+
+struct Node{
+    int data;
+    Node *next;
+    
+    Node():data(-1),next(NULL){}
+    Node(int _data):data(_data),next(NULL){}
+};
+typedef Node* LinkList; // 给指向链表节点的指针取别名LinkList
+
+void Print(LinkList L){
+    for (LinkList p = L->next;p;p = p->next) cout << p->data << ' ';
+    cout << '\n';
+}
+
+void Merge(LinkList L1,LinkList L2){ // 合并两个循环单链表（无头结点）
+    LinkList p = L1,q = L2;
+    while (p->next != L1) p = p->next; // 找到L1的尾结点
+    while (q->next != L2) q = q->next; // 找到L2的尾结点
+    p->next = L2;
+    q->next = L1;
+}
+
+int main(){
+    // 生成测试单链表（无头节点）head1,head2即首节点
+    LinkList head1 = new Node(0),head2 = new Node(0);
+    LinkList p = head1;
+    int a[5] = {1,3,5,7,9};
+    int b[4] = {1,3,7,8};
+    for (int i = 0;i < 5;i ++){
+        LinkList t = new Node(a[i]);
+        p->next = t,t->next = head1;p = t;
+    }
+    
+    LinkList q = head2;
+    for (int i = 0;i < 4;i ++){
+        LinkList t = new Node(b[i]);
+        q->next = t,t->next = head2;q = t;
+    }
+    
+    Merge(head1,head2);
+    int t;
+    for (LinkList p = head1,t = 0;!t || p != head1;t ++,p = p->next) cout << p->data << ' ';
+    cout << '\n';
+    return 0;
+}
 ```
