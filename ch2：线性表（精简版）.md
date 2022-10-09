@@ -490,18 +490,6 @@ void Merge(LinkList L1,LinkList L2){ // 合并两个循环单链表（无头结�
 有一带头节点循环单链表，节点值均为正数，反复查找链表最小值并删除节点，直到链表为空，再删除表头节点。
 
 ```C++
-#include <bits/stdc++.h>
-using namespace std;
-
-struct Node{
-    int data;
-    Node *next;
-    
-    Node():data(-1),next(NULL){}
-    Node(int _data):data(_data),next(NULL){}
-};
-typedef Node* LinkList; // 给指向链表节点的指针取别名LinkList
-
 void Print(LinkList L){
     for (LinkList p = L->next;p;p = p->next) cout << p->data << ' ';
     cout << '\n';
@@ -524,19 +512,7 @@ void CycleDel(LinkList L){
     }
 }
 
-int main(){
-    // 生成测试单链表（带头节点）head即头节点
-    LinkList head = new Node();
-    LinkList p = head;
-    int a[5] = {1,3,2,5,8};
-    for (int i = 0;i < 5;i ++){
-        LinkList t = new Node(a[i]);
-        p->next = t,t->next = head;p = t;
-    }
-    
-    CycleDel(head);
-    return 0;
-}
+CycleDel(head);
 ```
 
 ### 20.双向链表的访问频度
@@ -546,9 +522,6 @@ int main(){
 其余算法设计要求参考代码。
 
 ```C++
-#include <bits/stdc++.h>
-using namespace std;
-
 struct Node{ // 双向链表
     int data,freq; // freq为访问频度
     Node *prev,*next;
@@ -582,28 +555,6 @@ DLinkList Locate(DLinkList head,int x){
     
     return t;
 }
-
-int main(){
-    // 生成测试双向链表（有头节点）head即头指针
-    DLinkList head = new Node();
-    int a[6] = {2,3,1,5,4,6};
-    head->next = head->prev = head;
-    DLinkList p = head;
-    for (int i = 0;i < 6;i ++){
-        DLinkList t = new Node(a[i]);
-        p->next = t,t->prev = p;
-        p = p->next;
-    }
-    
-    DLinkList t1 = Locate(head,4);
-    DLinkList t2 = Locate(head,4);
-    DLinkList t3 = Locate(head,4);
-    DLinkList t4 = Locate(head,2);
-    DLinkList t5 = Locate(head,6);
-
-    for (DLinkList p = head->next;p;p = p->next) cout << p->data << ' ' << p->freq << '\n';
-    return 0;
-}
 ```
 
 ### 21.单链表判环
@@ -613,18 +564,6 @@ int main(){
 两种思路：快慢指针和哈希表。
 
 ```C++
-#include <bits/stdc++.h>
-using namespace std;
-
-struct Node{
-    int data;
-    Node *next;
-    
-    Node():data(-1),next(NULL){}
-    Node(int _data):data(_data),next(NULL){}
-};
-typedef Node* LinkList; // 给指向链表节点的指针取别名LinkList
-
 bool isLoop(LinkList L){ // 带头结点，快慢指针判环
     LinkList fast,slow;
     fast = slow = L;
@@ -635,28 +574,6 @@ bool isLoop(LinkList L){ // 带头结点，快慢指针判环
         if (fast && fast == slow) return true; // 相遇说明有环
     }
     return false; // 两个指针只要一个指空就无环
-}
-
-int main(){
-    // 生成测试单向链表（有头节点）head1,head2即头指针
-    LinkList head1 = new Node(),head2 = new Node();
-    int a[6] = {1,2,3,4,5,6};
-    LinkList p = head1;
-    for (int i = 0;i < 6;i ++){
-        LinkList t = new Node(a[i]);
-        p->next = t;p = p->next;
-    }
-    p->next = head1->next->next; // 有环
-    
-    LinkList q = head2;
-    for (int i = 0;i < 6;i ++){
-        LinkList t = new Node(a[i]);
-        p->next = t;p = p->next;
-    }// 无环
-    
-    cout << isLoop(head1) << '\n';
-    cout << isLoop(head2) << '\n';
-    return 0;
 }
 ```
 
@@ -669,18 +586,6 @@ int main(){
 思路：双指针一趟扫描，指针p从第一个结点开始往后走 k 步，然后指针p、q同时往后走，直到 p 走到链表尾。此时指针q指向的就是倒数第 k 个结点。
 
 ```C++
-#include <bits/stdc++.h>
-using namespace std;
-
-struct Node{
-    int data;
-    Node *next;
-    
-    Node():data(-1),next(NULL){}
-    Node(int _data):data(_data),next(NULL){}
-};
-typedef Node* LinkList; // 给指向链表节点的指针取别名LinkList
-
 int search(LinkList L,int k){ // 查找倒数第K个结点，双指针
     LinkList p,q;
     p = q = L;
@@ -693,20 +598,6 @@ int search(LinkList L,int k){ // 查找倒数第K个结点，双指针
     cout << q->data << '\n';
     return 1;
 }
-
-int main(){
-    // 生成测试单向链表（有头节点）head即头指针
-    LinkList head = new Node();
-    int a[6] = {1,2,3,4,5,6};
-    LinkList p = head;
-    for (int i = 0;i < 6;i ++){
-        LinkList t = new Node(a[i]);
-        p->next = t;p = p->next;
-    }
-
-    cout << search(head,4) << '\n';
-    return 0;
-}
 ```
 
 ### 23.（2012真题）两个链表的公共结点
@@ -718,18 +609,6 @@ int main(){
 删除有头结点单链表中绝对值相等的结点（只保留一个）。
 
 ```C++
-#include <bits/stdc++.h>
-using namespace std;
-
-struct Node{
-    int data;
-    Node *next;
-    
-    Node():data(-1),next(NULL){}
-    Node(int _data):data(_data),next(NULL){}
-};
-typedef Node* LinkList; // 给指向链表节点的指针取别名LinkList
-
 void solve(LinkList head,int n){ // 链表head中结点的绝对值 <= n
     bool st[n+1];
     memset(st,0,sizeof st);
@@ -747,22 +626,6 @@ void solve(LinkList head,int n){ // 链表head中结点的绝对值 <= n
     }
     
 }
-
-int main(){
-    // 生成测试单向链表（有头节点）head即头指针
-    LinkList head = new Node();
-    int a[6] = {-1,-2,2,1,3,-1};
-    LinkList p = head;
-    for (int i = 0;i < 6;i ++){
-        LinkList t = new Node(a[i]);
-        p->next = t;p = p->next;
-    }
-
-    solve(head,3);
-    for (LinkList p = head->next; p;p = p->next) cout << p->data << ' ';
-    cout << '\n';
-    return 0;
-}
 ```
 
 ### 25.（2019真题）单链表重排
@@ -770,18 +633,6 @@ int main(){
 重排带头结点单链表，`原链表L = {a1,a2,a3, ..., an}`，`重排后链表L' = {a1,an,a2,an-1, ...}`。
 
 ```C++
-#include <bits/stdc++.h>
-using namespace std;
-
-struct Node{
-    int data;
-    Node *next;
-    
-    Node():data(-1),next(NULL){}
-    Node(int _data):data(_data),next(NULL){}
-};
-typedef Node* LinkList; // 给指向链表节点的指针取别名LinkList
-
 void resort(LinkList head,int n){ // 重排带头结点单链表(有n个数据结点，从1编号)，直接模拟
     // 将链表拆分为前后两部分，不均分时前比后多1
     int s = n/2; // 从head走s步后到达前部最后一个结点
@@ -808,25 +659,6 @@ void resort(LinkList head,int n){ // 重排带头结点单链表(有n个数据�
         if (t2) p->next = t2,p = p->next;
         if (t2) t2 = t2->next;
     }
-}
-
-int main(){
-    // 生成测试单向链表（有头节点）head即头指针
-    LinkList head = new Node();
-    int a[11] = {1,2,3,4,5,6,7,8,9,10,11};
-    LinkList p = head;
-    for (int i = 0;i < 11;i ++){
-        LinkList t = new Node(a[i]);
-        p->next = t;p = p->next;
-    }
-
-    
-    for (LinkList p = head->next; p;p = p->next) cout << p->data << ' ';
-    cout << '\n';
-    resort(head,10);
-    for (LinkList p = head->next; p;p = p->next) cout << p->data << ' ';
-    cout << '\n';
-    return 0;
 }
 ```
 
