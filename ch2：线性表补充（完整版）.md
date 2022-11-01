@@ -186,40 +186,41 @@ struct Node{
 };
 typedef Node* LinkList;
 
-void Divide(LinkList &L,LinkList &A,LinkList &B){
-    // 将带头结点单链表分解为两个带头结点单链表，分别存放原表中序号为奇数和偶数的元素
-    // 保持相对顺序不变
-    if (!L->next) return;
-    int id = 1; // 从1开始编号
-    LinkList p = A,q = B,r = L->next;
-    while (r){
-        if (id ++ % 2){
-            p->next = r;p = p->next;
-        }
+LinkList create(LinkList A,LinkList B){
+    // 给定两个带头结点单链表，递增有序，构造含公共结点的链表，不破环原链表
+    LinkList L = new Node(-1);
+    if (!A->next || !B->next) return L;
+    LinkList p = A->next,q = B->next,r = L;
+    while (p && q){
+        if (p->data < q->data) p = p->next;
+        else if (p->data > q->data) q = q->next;
         else{
-            q->next = r;q = q->next;
+            r->next = new Node(p->data);
+            r = r->next,p = p->next,q = q->next;
         }
-        r = r->next;
     }
-    p->next = q->next = NULL;
+    return L;
 }
 
 int main(){
-    LinkList head = new Node(-1);
-    int a[] = {4,1,5,7,8,2,11};
-    auto p = head;
-    for (int i = 0;i < 7;i ++){
+    LinkList head1 = new Node(-1);
+    int a[] = {1,2,3,4,7,9,10,13};
+    auto p = head1;
+    for (int i = 0;i < 8;i ++){
         p->next = new Node(a[i]);
         p = p->next;
     }
 
-    for (auto p = head->next;p;p = p->next) cout << p->data << ' ';
-    cout << '\n';
-    LinkList A = new Node(-1),B = new Node(-1);
-    Divide(head,A,B);
-    for (auto p = A->next;p;p = p->next) cout << p->data << ' ';
-    cout << '\n';
-    for (auto p = B->next;p;p = p->next) cout << p->data << ' ';
+    LinkList head2 = new Node(-1);
+    int b[] = {2,3,4,7,8,9,10};
+    p = head2;
+    for (int i = 0;i < 7;i ++){
+        p->next = new Node(b[i]);
+        p = p->next;
+    }
+    
+    auto t = create(head1,head2);
+    for (auto p = t->next; p ;p = p->next) cout << p->data << ' ';
     cout << '\n';
     return 0;
 }
