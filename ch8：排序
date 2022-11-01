@@ -1,0 +1,177 @@
+# chapter 8：排序
+
+> 较少考察。
+
+## 习题8.3
+
+### 3.有序线性表奇偶重排
+
+将有序表（各个数值不同）中所有奇数移动到所有偶数之前。
+
+要求时间和空间复杂度最低。
+
+```C++
+#include <bits/stdc++.h>
+using namespace std;
+
+void move(int a[],int l,int r){
+  // 将给定序列的所有奇数移动到所有偶数之前，双指针
+  int i = l,j = r;
+  while (i < j){
+    while (i < j && a[j]%2) j --;
+    while (i < j && !(a[i]%2)) i ++;
+    if (i < j) swap(a[i],a[j]);
+  }
+}
+
+int main(){
+  int a[] = {1,2,3,4,56,3,17,23,45,2};
+  move(a,0,9);
+  for (int i = 0;i < 10;i ++) cout << a[i] << ' ';
+  cout << '\n';
+  return 0;
+}
+```
+
+### 5.无序数组中第K小元素
+
+```C++
+#include <bits/stdc++.h>
+using namespace std;
+
+int get_K(int a[],int l,int r,int k){ // 求无序序列中第K小元素
+    // 快排经典应用
+    if (l >= r) return a[l];
+    int i = l,j = r,x = a[l];
+    while (i < j){
+      while (i < j && a[j] >= x) j --;
+      while (i < j && a[i] <= x) i ++;
+      if (i < j) swap(a[i],a[j]);
+    }
+    swap(a[i],a[l]);
+
+    // 快排将序列划分为三部分：[l,i-1],i,[i+1,r]
+    // 和y总写法不太一样，笔试按照这种写法
+    if (k < i+1) return get_K(a,l,i-1,k);
+    if (k == i+1) return a[i]; // 下标为i实际排名为i+1
+    else return get_K(a,i+1,r,k); // 注意参数k不变
+}
+
+int main(){
+  int a[] = {1,2,2,3,3,5,7,9,10,11};
+  
+  cout << get_K(a,0,9,8);
+  cout << '\n'; 
+  return 0;
+}
+```
+
+### 7.（2016年真题）整数集合划分
+
+[AcWing整数集合划分](https://www.acwing.com/problem/content/1605/)
+
+给定一个包含 N 个正整数的集合，请你将它划分为两个集合 A1 和 A2，其中 A1 包含 n1 个元素，A2 包含 n2 个元素。
+
+集合中可以包含相同元素。
+
+用 S1 表示集合 A1 内所有元素之和，S2 表示集合 A2 内所有元素之和。
+
+请你妥善划分，使得 |n1−n2| 尽可能小，并在此基础上 |S1−S2|尽可能大。
+
+```C++
+#include <bits/stdc++.h>
+using namespace std;
+const int N = 1e5+5;
+int a[N];
+
+int main(){
+  int n;
+  cin >> n;
+
+  for (int i = 0;i < n;i ++) cin >> a[i];
+
+  sort(a,a + n);
+  int max_v = 0,min_v = 0;
+  for (int i = 0;i < n/2;i ++) min_v += a[i];
+  for (int i = n/2;i < n;i ++) max_v += a[i];
+  cout << (n % 2 ? 1 : 0) << ' ' << max_v - min_v << '\n';
+  return 0;
+}
+```
+
+## 习题8.4
+
+### 4.单链表简单选择排序
+
+```C++
+#include <bits/stdc++.h>
+using namespace std;
+
+struct Node{
+    int data;
+    Node* next;
+
+    Node():next(NULL){}
+    Node(int _data):data(_data),next(NULL){}
+};
+typedef Node* LinkList;
+
+void sort(LinkList &L){ // 单链表简单排序
+    if (!L->next || !L->next->next) return;
+    LinkList p = L->next;
+    for (;p->next;p = p->next){
+        int min_v = p->data;
+        for (LinkList q = p->next;q;q = q->next){
+            if (q->data < min_v){
+              p->data = q->data;
+              q->data = min_v;
+              min_v = p->data;
+            }
+        }
+    }
+}
+
+int main(){
+    LinkList head = new Node(-1);
+    int a[] = {4,1,5,5,8,22};
+    auto p = head;
+    for (int i = 0;i < 6;i ++){
+        p->next = new Node(a[i]);
+        p = p->next;
+    }
+
+    for (auto p = head->next;p;p = p->next) cout << p->data << ' ';
+    cout << '\n';
+    sort(head);
+    for (auto p = head->next;p;p = p->next) cout << p->data << ' ';
+    cout << '\n';
+    return 0;
+}
+```
+
+### 5.小根堆判定
+
+判断给定序列是否构成一个小根堆。
+
+```C++
+#include <bits/stdc++.h>
+using namespace std;
+
+bool judge(int a[],int x,int n){
+  if (x >= n) return true;
+  if (2*x <= n && a[x] > a[2*x]) return false;
+  if (2*x+1 <= n && a[x] > a[2*x+1]) return false;
+  return judge(a,2*x,n) && judge(a,2*x+1,n);
+}
+
+bool is_MinHeap(int a[],int n){  // 判断给定序列是否构成一个小根堆
+  return judge(a,1,n);
+}
+
+int main(){
+  int a[15] = {0,23,25,68,52,60,72,71}; // 从a[1]开始才是有效数据，方便堆的处理
+
+  cout << is_MinHeap(a,7) << '\n';
+  return 0;
+}
+```
