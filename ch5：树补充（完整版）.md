@@ -1,0 +1,305 @@
+# chapter 5：树
+
+> 有概率考察代码题，重要性仅次于链表。
+
+## 习题5.3
+
+### 二叉树结构体定义
+
+```C++
+struct BiTNode{
+  int data;
+  BiTNode *lchild,*rchild;
+  
+  BiTNode():data(-1),lchild(NULL),rchild(NULL){}
+  BiTNode(int _data):data(_data),lchild(NULL),rchild(NULL){}
+};
+typedef BiTNode* BiTree; // 给指向树结点的指针取别名BiTree
+
+BiTree L = new BiTNode(); // 正确定义
+BiTree L = new BiTree(); // 错误定义
+```
+
+### 3.非递归后序遍历二叉树
+
+```C++
+#include <bits/stdc++.h>
+using namespace std;
+const int N = 100;
+struct BiTNode{
+  int data;
+  BiTNode *lchild,*rchild;
+  
+  BiTNode():data(-1),lchild(NULL),rchild(NULL){}
+  BiTNode(int _data):data(_data),lchild(NULL),rchild(NULL){}
+};
+typedef BiTNode* BiTree; // 给指向树结点的指针取别名BiTree
+
+void insert(BiTree &t,int val){
+    if (!t) t = new BiTNode(val);
+    else if (val == t->data) t->lchild = new BiTNode(val);
+    else if (val < t->data) insert(t->lchild,val);
+    else if (val > t->data) insert(t->rchild,val);
+}
+
+void reverse(int a[N],int l,int r){
+    for (int i = l;i <= (l+r)>>1;i ++){
+        swap(a[i],a[l+r-i]);
+    }
+}
+
+int ans[N],k = 0; // 存放后序序列
+void postOrder(BiTree root){ // 后序非递归遍历二叉树
+    if (!root) return;
+    BiTree stk[N];int top = -1; // 初始化栈
+    stk[++top] = root;
+    while (top != -1){
+        BiTree t = stk[top--];
+        ans[k++] = t->data;
+        // 按照左->右的顺序入栈，右先出栈
+        // 整体是根右左的顺序遍历，最后反转就行
+        if (t->lchild) stk[++top] = t->lchild; thanks 
+        if (t->rchild) stk[++top] = t->rchild;
+    }
+    reverse(ans,0,k-1); // 可以用栈访问来代替
+}
+
+int main(){
+    int a[8] = {45,24,53,12,1,4,6};
+    BiTree root = NULL;
+    for (int i = 0;i < 7;i ++) insert(root,a[i]); // BST构建二叉树
+
+    postOrder(root);
+    for (int i = 0;i < k;i ++) cout << ans[i] << ' ';
+    cout << '\n';
+    return 0;
+}
+```
+
+### 4.二叉树的自下而上、从右到左层次遍历
+
+ 上题使用数组反转方式求的后序序列，本题使用栈来反转序列。
+
+```C++
+#include <bits/stdc++.h>
+using namespace std;
+const int N = 100;
+struct BiTNode{
+  int data;
+  BiTNode *lchild,*rchild;
+  
+  BiTNode():data(-1),lchild(NULL),rchild(NULL){}
+  BiTNode(int _data):data(_data),lchild(NULL),rchild(NULL){}
+};
+typedef BiTNode* BiTree; // 给指向树结点的指针取别名BiTree
+
+void insert(BiTree &t,int val){
+    if (!t) t = new BiTNode(val);
+    else if (val == t->data) t->lchild = new BiTNode(val);
+    else if (val < t->data) insert(t->lchild,val);
+    else if (val > t->data) insert(t->rchild,val);
+}
+
+void reverse(int a[N],int l,int r){
+    for (int i = l;i <= (l+r)>>1;i ++){
+        swap(a[i],a[l+r-i]);
+    }
+}
+
+int ans[N],k = 0; // 存放后序序列
+void postOrder(BiTree root){ // 后序非递归遍历二叉树
+    if (!root) return;
+    BiTree stk[N];int top = -1; // 初始化栈
+    stk[++top] = root;
+    while (top != -1){
+        BiTree t = stk[top--];
+        ans[k++] = t->data;
+
+        if (t->lchild) stk[++top] = t->lchild;
+        if (t->rchild) stk[++top] = t->rchild;
+    }
+    reverse(ans,0,k-1);
+}
+
+int main(){
+    int a[8] = {45,24,53,12,1,4,6};
+    BiTree root = NULL;
+    for (int i = 0;i < 7;i ++) insert(root,a[i]); // BST构建二叉树
+
+    postOrder(root);
+    for (int i = 0;i < k;i ++) cout << ans[i] << ' ';
+    cout << '\n';
+    return 0;
+}
+```
+
+### 16.二叉树叶子串成单链表
+
+将二叉树中的叶子按从左到右的顺序串起来，用右指针域指向下个叶子。
+
+二叉树中叶子的右指针域为空，在其存放指向下个叶子的单链表指针。
+
+（并不是单独构建一个单链表，不懂题意的话看看王道习题讲解）
+
+```C++
+#include <bits/stdc++.h>
+using namespace std;
+const int N = 100;
+struct BiTNode{
+  int data;
+  BiTNode *lchild,*rchild;
+  
+  BiTNode():data(-1),lchild(NULL),rchild(NULL){}
+  BiTNode(int _data):data(_data),lchild(NULL),rchild(NULL){}
+};
+typedef BiTNode* BiTree; // 给指向树结点的指针取别名BiTree
+
+void insert(BiTree &t,int val){
+    if (!t) t = new BiTNode(val);
+    else if (val == t->data) t->lchild = new BiTNode(val);
+    else if (val < t->data) insert(t->lchild,val);
+    else if (val > t->data) insert(t->rchild,val);
+}
+
+BiTree head = NULL,pre = NULL;
+BiTree leaves(BiTree &root){ // 将二叉树的叶子从左到右串成单链表
+    // 前中后序遍历中访问叶子的顺序都是从左到右，这里选择中序遍历
+    if (root){
+        leaves(root->lchild);
+        if (!root->lchild && !root->rchild){
+            if (!pre){
+                head = pre = root;
+            }
+            else{
+                pre->rchild = root;
+                pre = root;
+            }
+        }
+        leaves(root->rchild);
+        pre->rchild = NULL; // 最后记得把尾结点指空
+    }
+    return head;
+}
+
+int main(){
+    int a[8] = {45,24,53,12,1,4,6};
+    BiTree root = NULL;
+    for (int i = 0;i < 7;i ++) insert(root,a[i]); // BST构建二叉树
+
+    auto head = leaves(root);
+    for (auto p = head;p;p = p->rchild) cout << p->data << ' ';
+    cout << '\n';
+    return 0;
+}
+```
+
+### 17.二叉树相似判定
+
+```C++
+#include <bits/stdc++.h>
+using namespace std;
+const int N = 100;
+struct BiTNode{
+  int data;
+  BiTNode *lchild,*rchild;
+  
+  BiTNode():data(-1),lchild(NULL),rchild(NULL){}
+  BiTNode(int _data):data(_data),lchild(NULL),rchild(NULL){}
+};
+typedef BiTNode* BiTree; // 给指向树结点的指针取别名BiTree
+
+void insert(BiTree &t,int val){
+    if (!t) t = new BiTNode(val);
+    else if (val == t->data) t->lchild = new BiTNode(val);
+    else if (val < t->data) insert(t->lchild,val);
+    else if (val > t->data) insert(t->rchild,val);
+}
+
+bool similar(BiTree t1,BiTree t2){ // 判断给定的两颗二叉树是否相似
+    // 相似指的是两树都空或者都只有根结点，或者两树的左子树相似都右子树相似
+    if (!t1 && !t2) return true; // 两树都空则相似，如果都只有根会递归处理判断相似
+    if (!t1 || !t2) return false; // 只有一树空不相似
+    return similar(t1->lchild,t2->lchild) && similar(t1->rchild,t2->rchild);
+}
+
+int main(){
+    // int a[8] = {45,24,53,12,1,4,6};
+    int a[] = {1,2,3};
+    BiTree root = NULL;
+    for (int i = 0;i < 3;i ++) insert(root,a[i]); // BST构建二叉树
+
+    int b[] = {5,7,9};
+    BiTree head = NULL;
+    for (int i = 0;i < 3;i ++) insert(head,b[i]);
+
+    cout << similar(root, head);
+    cout << '\n';
+    return 0;
+}
+```
+
+## 习题5.4
+
+### 6.构造孩子兄弟链表
+
+已知树的层次序列和每个结点的度，构造孩子兄弟链表。
+
+```C++
+#include <bits/stdc++.h>
+using namespace std;
+const int N = 100;
+struct BiTNode{
+  int data;
+  BiTNode *lchild,*rchild;
+  
+  BiTNode():data(-1),lchild(NULL),rchild(NULL){}
+  BiTNode(int _data):data(_data),lchild(NULL),rchild(NULL){}
+};
+typedef BiTNode* BiTree; // 给指向树结点的指针取别名BiTree
+
+void insert(BiTree &t,int val){
+    if (!t) t = new BiTNode(val);
+    else if (val == t->data) t->lchild = new BiTNode(val);
+    else if (val < t->data) insert(t->lchild,val);
+    else if (val > t->data) insert(t->rchild,val);
+}
+
+BiTree create(int post[],int degree[],int n){ // 已知树的层次序列和每个结点的度，构造孩子兄弟链表
+  // 说明：构造孩子兄弟链表，这里就用二叉链表代替
+  BiTree tree[N];
+  for (int i = 0;i < n;i ++){
+    tree[i] = new BiTNode(post[i]);
+  }
+  int k = 0;
+  for (int i = 0;i < n;i ++){
+    if (!degree[i]) break;
+    tree[i]->lchild = tree[++k];
+    for (int j = 2;j <= degree[i];j ++){
+      tree[k]->rchild = tree[k+1];
+      k ++;
+    }
+  }
+  return tree[0];
+}
+
+void dfs(BiTree t){
+  if (!t) return;
+  cout << t->data << ' ';
+  if (t->lchild) dfs(t->lchild);
+  if (t->rchild) dfs(t->rchild);
+}
+
+int main(){
+    // int a[8] = {45,24,53,12,1,4,6};
+    int a[] = {1,2,3};
+    BiTree root = NULL;
+    for (int i = 0;i < 3;i ++) insert(root,a[i]); // BST构建二叉树
+
+    int post[] = {1,2,3,5,4,6,7,8};
+    int degree[] = {2,1,3,1,0,0,0,0};
+    auto head = create(post, degree, 8);
+    dfs(head);
+    cout << '\n';
+    return 0;
+}
+```
