@@ -1,0 +1,80 @@
+# chapter 3：栈、队列和数组
+
+> 极少考察代码题。
+
+## 习题3.3
+
+### 1.括号匹配
+
+给定字符串中包含圆括号，方括号，花括号，检查括号是否匹配。
+
+```C++
+#include <bits/stdc++.h>
+using namespace std;
+
+bool solve(string str){ // 检查给定字符串是否满足括号匹配
+    stack<char> st; // 考试时最好改成数组模拟栈
+    for (int i = 0;i < str.size();i ++){
+        if (str[i] == '(' || str[i] == '[' || str[i] == '{')
+            st.push(str[i]);
+        else if (str[i] == ')' && !st.empty() && st.top() == '('){
+            st.pop();
+        }
+        else if (str[i] == '}' && !st.empty() && st.top() == '{'){
+            st.pop();
+        }
+        else if (str[i] == ']' && !st.empty() && st.top() == '['){
+            st.pop();
+        }
+        else return false;
+    }
+    if (st.empty()) return true;
+    else return false;
+}
+
+int main(){
+    string str;
+    cin >> str;
+    
+    printf("%d\n",solve(str));
+    return 0;
+}
+```
+
+### 3.栈实现非递归算法
+
+$$
+P_n(x) = 
+\left\{\begin{matrix} 
+  1, n = 0 \\  
+  2x,n = 1 \\
+  2xP_{n-1}(x) - 2(n-1)P_{n-2}(x), n > 1
+\end{matrix}\right.
+$$
+
+其实就是数组递推。
+
+```C++
+#include <bits/stdc++.h>
+using namespace std;
+
+int solve(int n,int x){ // 利用栈实现递归函数Pn(x)
+    int fx1 = 1,fx2 = 2*x;
+    if (n < 0) return -1;
+    if (n == 0) return fx1;
+    if (n == 1) return fx2;
+    int st[n+1];
+    
+    int top = 2;
+    while (top <= n){
+        st[top] = 2*x*fx2 - 2*(top-1)*fx1;
+        fx1 = fx2,fx2 = st[top ++];
+    }
+    return st[n];
+}
+
+int main(){
+    cout << solve(7,5) << '\n';
+    return 0;
+}
+```
