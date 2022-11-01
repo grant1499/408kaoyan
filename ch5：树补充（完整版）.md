@@ -100,25 +100,19 @@ void insert(BiTree &t,int val){
     else if (val > t->data) insert(t->rchild,val);
 }
 
-void reverse(int a[N],int l,int r){
-    for (int i = l;i <= (l+r)>>1;i ++){
-        swap(a[i],a[l+r-i]);
+void level(BiTree root){ // 自下而上、从右到左层次遍历
+    int stk[N],top = -1; // 初始化栈
+    BiTree Q[N];int front = 0,rear = -1; // 初始化队列
+    Q[++rear] = root;
+    
+    while (front <= rear) {
+        BiTree t = Q[front++];
+        stk[++top] = t->data;
+        if (t->lchild) Q[++rear] = t->lchild;
+        if (t->rchild) Q[++rear] = t->rchild;
     }
-}
-
-int ans[N],k = 0; // 存放后序序列
-void postOrder(BiTree root){ // 后序非递归遍历二叉树
-    if (!root) return;
-    BiTree stk[N];int top = -1; // 初始化栈
-    stk[++top] = root;
-    while (top != -1){
-        BiTree t = stk[top--];
-        ans[k++] = t->data;
-
-        if (t->lchild) stk[++top] = t->lchild;
-        if (t->rchild) stk[++top] = t->rchild;
-    }
-    reverse(ans,0,k-1);
+    
+    while (top != -1) cout << stk[top--] << ' ';
 }
 
 int main(){
@@ -126,9 +120,7 @@ int main(){
     BiTree root = NULL;
     for (int i = 0;i < 7;i ++) insert(root,a[i]); // BST构建二叉树
 
-    postOrder(root);
-    for (int i = 0;i < k;i ++) cout << ans[i] << ' ';
-    cout << '\n';
+    level(root);
     return 0;
 }
 ```
